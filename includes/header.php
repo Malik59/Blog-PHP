@@ -1,3 +1,8 @@
 <header>
-    <div class="logo">My Blog</div>
+    <a href="/" class="logo">My Blog</a>
+    <ul class="header-menu">
+        <li class=<?= $_SERVER["REQUEST_URI"] === "/add-article.php" ? "active": "" ?>>
+            <a href="/add-article.php">Ecrire un article</a>
+        </li>
+    </ul>
 </header>
