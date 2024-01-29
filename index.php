@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="public/css/index.css">
     <title>Blog Version 1</title>
 </head>
+
+<!--title -->
+<!--image -->
+<!--category -->
+<!--content -->
+
 <body>
     <div class="container">
     <?php require_once __DIR__ . "/includes/header.php" ?>
