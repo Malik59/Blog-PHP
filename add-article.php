@@ -10,15 +10,21 @@ $errors = [
     "category" => "",
     "content" => ""
 ];
+$articles = [];
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (file_exists($filename)) {
+        $articles = json_decode(file_get_contents($filename), true) ?? [];
+    }
+
     $_POST = filter_input_array(INPUT_POST, [
         "title" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "image" => FILTER_SANITIZE_URL,
         "category" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "content" => [
             "filter" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-            "flages" => FILTER_FLAG_NO_ENCODE_QUOTES
+            "flags" => FILTER_FLAG_NO_ENCODE_QUOTES
         ]
     ]);
 
@@ -36,43 +42,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$image) {
         $errors["image"] = ERROR_REQUIRED;
     } else if (!filter_var($image, FILTER_VALIDATE_URL)) {
-        $errors = ERROR_IMAGE_URL;
+        $errors["image"] = ERROR_IMAGE_URL;
     }
 
     if (!$category) {
         $errors["category"] = ERROR_REQUIRED;
     }
-    
+
     if (!$content) {
         $errors["content"] = ERROR_REQUIRED;
     } else if (mb_strlen($content) < 50) {
-        $errors = ERROR_CONTENT_TOO_SHORT;
+        $errors["content"] = ERROR_CONTENT_TOO_SHORT;
     }
 
-    if (empty(array_filter($errors,fn ($e) => $e !== ""))) {
-        echo "c'est ok";
-    } else {
-        print_r($errors);
+    if (empty((array_filter($errors, fn ($e) => $e !== "")))) {
+        $articles = [...$articles, [
+            "title" => $title,
+            "image" => $image,
+            "category" => $category,
+            "content" => $content
+        ]];
+        file_put_contents($filename, json_encode($articles));
+        header("Location: /");
     }
-
-
 }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <?php require_once __DIR__ . "/includes/head.php" ?>
     <link rel="stylesheet" href="public/css/add-article.css">
     <title>Créer un article</title>
 </head>
+
 <body>
     <div class="container">
-    <?php require_once __DIR__ . "/includes/header.php" ?>
-        
-    <div class="content">
-        <div class="block p-20 form-container">
+        <?php require_once __DIR__ . "/includes/header.php" ?>
+
+        <div class="content">
+            <div class="block p-20 form-container">
                 <h1>Ecrire un article</h1>
                 <form action="/add-article.php" method="POST">
                     <div class="form-control">
@@ -104,13 +115,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <button class="btn btn-primary" type="submit">Sauvegarder</button>
                     </div>
                 </form>
+            </div>
         </div>
-    </div>
 
-    <?php require_once __DIR__ . "/includes/footer.php" ?>
-    
-        
+        <?php require_once __DIR__ . "/includes/footer.php" ?>
+
+
     </div>
 
 </body>
+
 </html>
