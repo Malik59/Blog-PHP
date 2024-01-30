@@ -107,6 +107,14 @@ header {
     box-shadow: var(--box-shadow);
 }
 
+.text-error {
+    color: rgb(233, 65, 65);
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding-top: 0.2rem;
+    padding-left: 0.3rem;
+}
+
 /* utils */
 .p-20 {
     padding: 2rem;

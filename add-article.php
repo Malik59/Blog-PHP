@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$title) {
         $errors["title"] = ERROR_REQUIRED;
     } else if (mb_strlen($title) < 5) {
-        $errors = ERROR_TITLE_TOO_SHORT;
+        $errors["title"] = ERROR_TITLE_TOO_SHORT;
     }
 
     if (!$image) {
@@ -60,7 +60,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             "title" => $title,
             "image" => $image,
             "category" => $category,
-            "content" => $content
+            "content" => $content,
+            "id" => time()
         ]];
         file_put_contents($filename, json_encode($articles));
         header("Location: /");
@@ -88,13 +89,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <form action="/add-article.php" method="POST">
                     <div class="form-control">
                         <label for="title">Titre</label>
-                        <input type="text" name="title" id="title">
-                        <!-- <p class="text-error"></p>  -->
+                        <input type="text" name="title" id="title" value=<?= $image ?? "" ?>>
+                        <?php if ($errors["title"]): ?>
+                            <p class="text-error"><?= $errors["title"] ?></p>
+                        <?php endif; ?> 
                     </div>
                     <div class="form-control">
                         <label for="image">Image</label>
-                        <input type="text" name="image" id="image">
-                        <!-- <p class="text-error"></p>  -->
+                        <input type="text" name="image" id="image" value=<?= $image ?? "" ?>>
+                        <?php if ($errors["image"]): ?>
+                            <p class="text-error"><?= $errors["image"] ?></p>
+                        <?php endif; ?> 
                     </div>
                     <div class="form-control">
                         <label for="category">Catégorie</label>
@@ -103,12 +108,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <option value="nature">Nature</option>
                             <option value="politic">Politique</option>
                         </select>
-                        <!-- <p class="text-error"></p>  -->
+                        <?php if ($errors["category"]): ?>
+                            <p class="text-error"><?= $errors["category"] ?></p>
+                        <?php endif; ?> 
                     </div>
                     <div class="form-control">
                         <label for="content">Contenu</label>
-                        <textarea name="content" id="content"></textarea>
-                        <!-- <p class="text-error"></p>  -->
+                        <textarea name="content" id="content" value=<?= $content ?? "" ?>></textarea>
+                        <?php if ($errors["content"]): ?>
+                            <p class="text-error"><?= $errors["content"] ?></p>
+                        <?php endif; ?> 
                     </div>
                     <div class="form-actions">
                         <a href="/" class="btn btn-secondary" type="button">Annuler</a>
