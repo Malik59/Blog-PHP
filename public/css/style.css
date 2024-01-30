@@ -89,6 +89,10 @@ header {
     background-color: var(--background-light);
 }
 
+.overflow {
+    overflow: hidden;
+}
+
 /* content */
 .content {
     max-width: 100rem;
