@@ -16,8 +16,13 @@
   .article:hover .img-container {
     transform: scale(1.1);
   }
+
+  .category-container h2 {
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+  }
   
-  .article h2 {
+  .article h3 {
     font-size: 1.7rem;
     padding: 1rem 1.5rem;
   }
