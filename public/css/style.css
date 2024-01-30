@@ -47,6 +47,7 @@ a {
 /* header */
 header {
     background-color: var(--primary);
+    box-shadow: var(--box-shadow);
     padding: 1.5rem;
     color: white;
     display: flex;
@@ -131,6 +132,7 @@ header {
 /* footer */
 footer {
     background-color: var(--secondary);
+    box-shadow: var(--box-shadow);
     padding: 1.5rem;
     color: white;
     text-align: right;
