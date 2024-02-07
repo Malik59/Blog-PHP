@@ -1,4 +1,5 @@
 <?php
+$pdo = require_once "./database.php";
 $filename = __DIR__ . "/data/articles.json";
 $articles = [];
 $categories = [];
