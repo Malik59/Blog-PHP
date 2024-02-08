@@ -1,9 +1,19 @@
 <?php
+$pdo = require_once "./database.php";
+$statementCreateOne = $pdo->prepare('
+    INSERT INTO article (title, category, content, image) VALUES (:title, :category, :content, :image)');
+
+$statementUpdateOne = $pdo->prepare('
+    UPDATE article SET title=:title, category=:category, content=:content, image=:image
+    WHERE id=:id');
+
+$statementReadOne = $pdo->prepare('SELECT * FROM article WHERE id=:id');
+
 const ERROR_REQUIRED = 'Veuillez renseigner ce champ';
 const ERROR_TITLE_TOO_SHORT = 'Le titre est trop court';
 const ERROR_CONTENT_TOO_SHORT = 'L\'article est trop court';
 const ERROR_IMAGE_URL = 'L\'image doit être une url valide';
-$filename = __DIR__ . '/data/articles.json';
+
 $errors = [
     'title' => '',
     'image' => '',
@@ -12,15 +22,13 @@ $errors = [
 ];
 $category = '';
 
-if (file_exists($filename)) {
-    $articles = json_decode(file_get_contents($filename), true) ?? [];
-}
 
 $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $id = $_GET['id'] ?? '';
 if ($id) {
-    $articleIndex = array_search($id, array_column($articles, 'id'));
-    $article = $articles[$articleIndex];
+    $statementReadOne->bindValue(":id", $id);
+    $statementReadOne->execute();
+    $article = $statementReadOne->fetch();
     $title = $article['title'];
     $image = $article['image'];
     $category = $article['category'];
@@ -67,20 +75,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty(array_filter($errors, fn ($e) => $e !== ''))) {
         if ($id) {
-            $articles[$articleIndex]['title'] = $title;
-            $articles[$articleIndex]['image'] = $image;
-            $articles[$articleIndex]['category'] = $category;
-            $articles[$articleIndex]['content'] = $content;
+            $article['title'] = $title;
+            $article['image'] = $image;
+            $article['category'] = $category;
+            $article['content'] = $content;
+            $statementUpdateOne->bindValue(":title", $title);
+            $statementUpdateOne->bindValue(":content", $content);
+            $statementUpdateOne->bindValue(":category", $category);
+            $statementUpdateOne->bindValue(":image", $image);
+            $statementUpdateOne->bindValue(":id", $id);
+            $statementUpdateOne->execute();
         } else {
-            $articles = [...$articles, [
-                'title' => $title,
-                'image' => $image,
-                'category' => $category,
-                'content' => $content,
-                'id' => time()
-            ]];
+            $statementCreateOne->bindValue(":title", $title);
+            $statementCreateOne->bindValue(":content", $content);
+            $statementCreateOne->bindValue(":category", $category);
+            $statementCreateOne->bindValue(":image", $image);
+            $statementCreateOne->execute();
         }
-        file_put_contents($filename, json_encode($articles));
         header('Location: /');
     }
 }

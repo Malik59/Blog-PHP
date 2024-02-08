@@ -52,3 +52,7 @@
   background-color: var(--primary);
   color: white;
   }
+
+  .btn-delete {
+    margin-right: 1rem;
+}
